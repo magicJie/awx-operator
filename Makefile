@@ -87,7 +87,7 @@ all: docker-build
 
 .PHONY: help
 help: ## Display this help.
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9_%-]+:.*?##/ { printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 .PHONY: print-%
 print-%: ## Print any variable from the Makefile. Use as `make print-VARIABLE`
@@ -327,10 +327,10 @@ charts:
 	mkdir -p $@
 
 .PHONY: helm-chart
-helm-chart: helm-chart-generate
+helm-chart: helm-chart-generate ## Short name for helm-chart-generate
 
 .PHONY: helm-chart-generate
-helm-chart-generate: kustomize helm kubectl-slice yq charts
+helm-chart-generate: kustomize helm kubectl-slice yq charts ## Generate helm chart
 	@echo "== KUSTOMIZE: Set image and chart label =="
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	cd config/manager && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)
@@ -395,7 +395,7 @@ helm-chart-generate: kustomize helm kubectl-slice yq charts
 
 
 .PHONY: helm-package
-helm-package: helm-chart
+helm-package: helm-chart ##
 	@echo "== Package Current Chart Version =="
 	mkdir -p .cr-release-packages
 	# package the chart and put it in .cr-release-packages dir
@@ -408,7 +408,7 @@ TAGS := $(shell git ls-remote --tags --sort=version:refname --refs -q | cut -d/ 
 # until https://github.com/helm/chart-releaser/issues/122 happens, chart-releaser is not ideal for a chart
 # that is contained within a larger repo, where a tag may not require a new chart version
 .PHONY: helm-index
-helm-index:
+helm-index: ##
 	# when running in CI the gh-pages branch is checked out by the ansible playbook
 	# TODO: test if gh-pages directory exists and if not exist
 
