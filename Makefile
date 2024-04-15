@@ -5,6 +5,7 @@
 # - use environment variables to overwrite this value (e.g export VERSION=0.0.2)
 VERSION ?= $(shell git describe --tags)
 PREV_VERSION ?= $(shell git describe --abbrev=0 --tags $(shell git rev-list --tags --skip=1 --max-count=1))
+KUBE_RBAC_PROXY ?= gcr.io/kubebuilder/kube-rbac-proxy:v0.15.0
 
 CONTAINER_CMD ?= docker
 
@@ -332,7 +333,8 @@ helm-chart: helm-chart-generate ## Short name for helm-chart-generate
 .PHONY: helm-chart-generate
 helm-chart-generate: kustomize helm kubectl-slice yq charts ## Generate helm chart
 	@echo "== KUSTOMIZE: Set image and chart label =="
-	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}:$${VERSION}
+	cd config/default && $(KUSTOMIZE) edit set image kube-rbac-proxy=${KUBE_RBAC_PROXY}
 	cd config/manager && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)
 	cd config/default && $(KUSTOMIZE) edit set label helm.sh/chart:$(CHART_NAME)
 
