@@ -105,7 +105,7 @@ docker-build: ## Build docker image with the manager.
 	${CONTAINER_CMD} build $(BUILD_ARGS) -t ${IMG} .
 
 .PHONY: docker-push
-docker-push: ## Push docker image with the manager.
+docker-push: docker-build ## Push docker image with the manager.
 	${CONTAINER_CMD} push ${IMG}
 
 # PLATFORMS defines the target platforms for  the manager image be build to provide support to multiple

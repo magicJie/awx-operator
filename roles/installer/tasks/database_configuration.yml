@@ -56,6 +56,14 @@
     _pg_config: '{{ _custom_pg_config_resources["resources"] | default([]) | length | ternary(_custom_pg_config_resources, _default_pg_config_resources) }}'
   no_log: "{{ no_log }}"
 
+- name: Debug postgres_image
+  debug:
+    msg: "postgres_image: {{ ansible_operator_meta.postgres_image }}"
+
+- name: Debug postgres_image_version
+  debug:
+    msg: "postgres_image_version: {{ ansible_operator_meta.postgres_image_version }}"
+
 - name: Set user provided postgres image
   set_fact:
     _custom_postgres_image: "{{ ansible_operator_meta.postgres_image }}:{{ ansible_operator_meta.postgres_image_version }}"
