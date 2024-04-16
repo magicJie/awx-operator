@@ -56,20 +56,12 @@
     _pg_config: '{{ _custom_pg_config_resources["resources"] | default([]) | length | ternary(_custom_pg_config_resources, _default_pg_config_resources) }}'
   no_log: "{{ no_log }}"
 
-- name: Debug postgres_image
-  debug:
-    msg: "postgres_image: {{ ansible_operator_meta.postgres_image }}"
-
-- name: Debug postgres_image_version
-  debug:
-    msg: "postgres_image_version: {{ ansible_operator_meta.postgres_image_version }}"
-
 - name: Set user provided postgres image
   set_fact:
-    _custom_postgres_image: "{{ ansible_operator_meta.postgres_image }}:{{ ansible_operator_meta.postgres_image_version }}"
+    _custom_postgres_image: "{{ postgres_image }}:{{ postgres_image_version }}"
   when:
-    - ansible_operator_meta.postgres_image | default([]) | length
-    - ansible_operator_meta.postgres_image_version is defined and ansible_operator_meta.postgres_image_version != ''
+    - postgres_image | default([]) | length
+    - postgres_image_version is defined and postgres_image_version != ''
 
 - name: Set Postgres image URL
   set_fact:
@@ -221,7 +213,7 @@
         name: "{{ ansible_operator_meta.name }}-postgres-{{ supported_pg_version }}"
         namespace: "{{ ansible_operator_meta.namespace }}"
         wait: yes
-      when: create_statefulset_result.error == 422
+      when: (create_statefulset_result.error | default('')) == 422
 
     - name: Recreate PostgreSQL statefulset with updated values
       k8s:
